@@ -1,0 +1,42 @@
+#Final Model Creation
+
+googlecloud:
+  RAM:    64
+  vCPU:    8
+  disk:  256
+
+
+experiment:
+  script: "src/completo/z941_FM_lightgbm.r"
+  restart: TRUE
+  name: "exp"
+  type: "FinalModel"
+  tags: [ "primero" ]
+  description: "El primer FM"
+
+  requires:   [ "8101HTa" ]
+
+param:
+  modelos_qty:     5
+  clase_train_POS: [ "BAJA+2", "BAJA+1" ]
+  clase_test_POS:  [ "BAJA+2" ]
+
+  files:
+    input:  #en formato [ alias_experimento,  archivo ]
+      dentrada:  "train_final"
+      BOlog:     "BOlog"
+    output:
+      tb_modelos:     "tb_modelos.txt"
+      FMmodelo:       "FM_lightgbm_"
+      FMimportancia:  "FM_importance_"
+
+  const:
+    campo_clase:   "clase_ternaria"
+    campo_periodo: "foto_mes"
+    campo_id:      "numero_de_cliente"
+
+environment:
+  repo_dir: "~/labo/"
+  exp_dir:  "~/buckets/b1/exp/"
+  catalog:  "catalogo.txt"
+

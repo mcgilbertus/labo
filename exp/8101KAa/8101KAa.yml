@@ -1,0 +1,41 @@
+#Kaggle Submits Generation
+
+googlecloud:
+  RAM:     8
+  vCPU:    4
+  disk:  256
+
+experiment:
+  script: "src/completo/z961_KA_cortar.r"
+  restart: TRUE
+  name: "exp"
+  type: "Kaggle"
+  tags: [ "primero" ]
+  description: "El primer KA"
+
+  requires: [ "8101SCa" ]
+
+
+param:
+  start:  9000
+  end:   12000
+  step:    500
+
+  files:
+    input:  #en formato [ alias_experimento,  archivo ]
+      tb_predicciones: "predicciones"
+    output:
+      tb_submits:  "tb_submits.txt"
+
+  const:
+    campo_id:        "numero_de_cliente"
+    campo_pred:      "Predicted"
+    campo_ganancia:  "ganancia"
+
+
+environment:
+  repo_dir: "~/labo/"
+  exp_dir:  "~/buckets/b1/exp/"
+  catalog:  "catalogo.txt"
+
+

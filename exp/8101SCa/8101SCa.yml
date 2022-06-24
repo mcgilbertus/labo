@@ -1,0 +1,38 @@
+#Scoring generation
+
+googlecloud:
+  RAM:    64
+  vCPU:    8
+  disk:  256
+
+
+experiment:
+  script: "src/completo/z951_SC_lightgbm.r"
+  restart: TRUE
+  name: exp
+  type: "Scoring"
+  tags: [ "primero" ]
+  description: "El primer SC"
+
+  requires: [ 8101FMa ]
+
+param:
+
+
+  files:
+    input:
+      dentrada: "future_data"
+      modelos:  "tb_modelos"
+    output:
+      tb_predicciones: "tb_predicciones.txt"
+      prefijo:  "futuro_prediccion_"
+
+  const:
+    campo_ganancia: "ganancia"
+    campos_pk: [ "numero_de_cliente", "foto_mes" ]
+
+environment:
+  repo_dir: "~/labo/"
+  exp_dir:  "~/buckets/b1/exp/"
+  catalog:  "catalogo.txt"
+
