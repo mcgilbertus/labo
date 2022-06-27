@@ -26,6 +26,9 @@ exp_mlflow_iniciar  <- function()
   Sys.setenv( MLFLOW_TRACKING_PASSWORD= MLFLOW$tracking_password )
   mlflow_set_tracking_uri( MLFLOW$tracking_uri )
 
+  Sys.setenv( PATH=paste0( "/home/", Sys.info()["user"], "/.local/bin:", 
+                           Sys.getenv("PATH")) )
+
   Sys.setenv(MLFLOW_BIN= Sys.which("mlflow") )
   Sys.setenv(MLFLOW_PYTHON_BIN= Sys.which("python3") )
   Sys.setenv(MLFLOW_TRACKING_URI= MLFLOW$tracking_uri, intern= TRUE )
