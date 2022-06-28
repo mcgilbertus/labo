@@ -1,0 +1,103 @@
+#Hyperparameter Tuning  SIN  Cross Validation,  la civilizacion Machine Learning
+
+googlecloud:
+  RAM:   128
+  vCPU:    8
+  disk:  300
+
+
+experiment:
+  script: "src/completo/z931_HT_lightgbm.r"
+  restart: TRUE
+  name: "exp"
+  type: "HyperparameterTuning"
+  tags: [ "choquecivilizaciones" ]
+  description: "solo training/testing"
+
+  requires:   [ "8102TSb" ]
+
+
+param:
+  algoritmo:  "lightgbm"
+  semilla: 102191
+
+  crossvalidation: FALSE              #Esta en FALSE, no se va a hacer ningun cross validation
+  crossvalidation_folds: 5
+  validate: FALSE
+
+  clase_train_POS:    [ "BAJA+2", "BAJA+1" ]
+  clase_validate_POS: [ "BAJA+2" ]
+  clase_test_POS:     [ "BAJA+2" ]
+
+
+ #los parametros que son vector [desde, hasta], van a Bayesian Optimization
+ #los parametros que son un solo valor  NO van a la B.O. y se pasan fijos
+  lightgbm:
+
+    learning_rate:      [ 0.02, 0.3 ]
+    feature_fraction:   [ 0.1, 1.0 ]
+    num_leaves:         [ 16, 1024, "integer" ]
+    min_data_in_leaf:   [  1, 20000, "integer" ]
+
+    lambda_l1:  0                    # [ 0  ,  10 ]
+    lambda_l2:  0                    # [ 0  , 200 ]
+    min_gain_to_split: 0             # [ 0  ,  20 ]
+    bagging_fraction: 1.0            # [ 0.2,   1.0 ]
+
+    pos_bagging_fraction: 1.0        # dejarlo fijo
+    neg_bagging_fraction: 1.0        # [ 0.1,   1.0 ]
+
+    max_depth:  -1                   # [ 6  ,  12 ]  #pero es preferible dejarlo en -1 como esta
+    max_bin:     31                  #dejarlo fijo en 31, los scripts no estan preparados para que esto cambie
+    
+    seed: 999983                     #podrian poner su propia semilla, asi sienten que la corrida les pertenece
+    extra_trees: FALSE
+
+    drop_rate: 0.1                   # [ 0.03,   1.0]  solo cuando  boosting: dart
+    max_drop: 50                     # [ 10  , 500]    solo cuando  boosting: dart
+    skip_drop: 0.5                   # [ 0.2 ,   0.8]  solo cuando  boosting: dart
+
+    metric: "custom"                 #no tocar
+    first_metric_only: TRUE          #no tocar
+    
+    objective: "binary"
+    boost_from_average: TRUE         #Ni se le ocurra cambiar esto, solo encontrara dolor y sufrimiento
+    force_row_wise: TRUE             #haga lo que quiera aqui, da lo mismo
+    feature_pre_filter: FALSE        #haga lo que quiera aqui, da lo mismo
+    boosting: "gbdt"                 #puede ir  dart  , ni pruebe random_forest
+    num_threads:  0                  #usa todas las vCPUs
+    verbosity: -100                  #no tocar, se llena de output la salida por pantalla
+    verbose:  -100                   #no tocar, se llena de output la salida por pantalla
+
+  #Optimizacion Bayesiana
+  BO:
+    iterations:  50             #cantidad de iteraciones inteligentes de la optimizacion bayesiana
+
+    noisy: TRUE
+    minimize: FALSE
+    has.simple.signature: FALSE
+    save.on.disk.at.time: 600      #cada cuantos segundos graba en disco
+
+
+  files:
+    input:
+      dentrada: "train_strategy"
+    output:
+      BOlog:           "BO_log.txt"
+      BObin:           "BO_bin.RDATA"
+      tb_importancia:  "tb_importancia.txt"
+      importancia:     "impo_"
+
+  const:
+    campo_clase:   "clase_ternaria"
+    campo_periodo: "foto_mes"
+    campo_id:      "numero_de_cliente"
+    POS_ganancia:  59000
+    NEG_ganancia:  -1000
+
+
+environment:
+  repo_dir: "~/labo/"
+  exp_dir:  "~/buckets/b1/exp/"
+  catalog:  "catalogo.txt"
+
