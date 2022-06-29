@@ -18,7 +18,7 @@ experiment:
 
 
 param:
-  semilla: 102191
+  semilla: 300017
 
   #donde aplico el modelo final, los datos sin clase
   future:
