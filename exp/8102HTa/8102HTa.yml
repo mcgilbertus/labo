@@ -19,7 +19,7 @@ experiment:
 
 param:
   algoritmo:  "lightgbm"
-  semilla: 102191
+  semilla: 300017
 
   crossvalidation: TRUE             # SI  hago  5-fold cross validation
   crossvalidation_folds: 5
