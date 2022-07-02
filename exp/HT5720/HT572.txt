@@ -1,0 +1,2 @@
+fecha	gamma	alpha	lambda	subsample	tree_method	grow_policy	max_depth	max_bin	scale_pos_weight	eta	colsample_bytree	min_child_weight	max_leaves	prob_corte	nrounds	ganancia	iteracion
+20220616 163044	0	0	0	1	hist	lossguide	0	256	1	0.3	1	1	20	0.0166666666666667	1	7250000	1

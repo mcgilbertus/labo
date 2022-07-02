@@ -18,10 +18,10 @@ require("data.table")
 require("lightgbm")
 
 
-ksemilla  <- 102191  #poner aqui la PRIMERA de sus cinco semillas
+ksemilla  <- 300017  #poner aqui la PRIMERA de sus cinco semillas
 
 #Aqui se debe poner la carpeta de la computadora local
-setwd("D:\\gdrive\\ITBA2022A\\")   #Establezco el Working Directory
+setwd("d:\\archi\\ernesto\\mmd\\Aplicaciones_a_Economia_y_Finanzas")   #Establezco el Working Directory
 
 #cargo el dataset donde voy a entrenar
 dataset  <- fread("./datasets/paquete_premium_202011.csv", stringsAsFactors= TRUE)
@@ -46,11 +46,11 @@ dtrain  <- lgb.Dataset( data= data.matrix(  dataset[ , campos_buenos, with=FALSE
 modelo  <- lgb.train( data= dtrain,
                       param= list( objective=        "binary",
                                    max_bin=              31,
-                                   learning_rate=         0.067,
+                                   learning_rate=     0.067,
                                    num_iterations=      128,
                                    num_leaves=          100,
                                    min_data_in_leaf=   1700,
-                                   feature_fraction=      0.37,
+                                   feature_fraction=   0.37,
                                    seed=               ksemilla   #aqui se utiliza SU primer semilla
                                   )
                     )

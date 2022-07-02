@@ -1,0 +1,10 @@
+distance	action	experiment	type	key	value
+2	SC	8101SCa	file	predicciones	~/buckets/b1/exp/8101SCa/tb_predicciones.txt
+3	FE	8101FMa	file	tb_modelos	~/buckets/b1/exp/8101FMa/tb_modelos.txt
+4	HT	8101HTa	file	BOlog	~/buckets/b1/exp/8101HTa/BO_log.txt
+5	TS	8101TSa	file	train_strategy	~/buckets/b1/exp/8101TSa/TS_train_strategy.csv.gz
+5	TS	8101TSa	file	train_final	~/buckets/b1/exp/8101TSa/TS_train_final.csv.gz
+5	TS	8101TSa	file	future_data	~/buckets/b1/exp/8101TSa/TS_future_data.csv.gz
+6	FE	8101FEa	file	dataset	~/buckets/b1/exp/8101FEa/paquete_premium_ext.csv.gz
+7	DT	DT0001	file	dataset	~/buckets/b1/exp/DT0001/paquete_premium.csv.gz
+1	KA	8101KAa	file	kaggle_submits	~/buckets/b1/exp/8101KAa/tb_submits.txt

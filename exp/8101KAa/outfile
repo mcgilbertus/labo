@@ -1,0 +1,14 @@
+         used (Mb) gc trigger (Mb) max used (Mb)
+Ncells 273639 14.7     660682 35.3   451613 24.2
+Vcells 458977  3.6    8388608 64.0  1799633 13.8
+Loading required package: data.table
+Loading required package: rlist
+Loading required package: yaml
+Loading required package: mlflow
+Tracing function "require" in package "base"
+Tracing function "library" in package "base"
+Tracing function "setwd" in package "base"
+Tracing function "set.seed" in package "base"
+Tracing function "runif" in package "stats"
+Tracing function "fread" in package "data.table"
+Tracing function "fwrite" in package "data.table"

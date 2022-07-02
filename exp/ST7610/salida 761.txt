@@ -1,0 +1,194 @@
+R version 4.2.0 (2022-04-22) -- "Vigorous Calisthenics"
+Copyright (C) 2022 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+
+Restarting R session...
+
+> #este script necesita para correr en Google Cloud
+> # RAM     16 GB
+> # vCPU     4
+> # disco  256 GB
+> 
+> 
+> #cluster jerárquico  utilizando "la distancia de Random Forest"
+> #adios a las fantasias de k-means y las distancias métricas, cuanto tiempo perdido ...
+> #corre muy lento porque la libreria RandomForest es del Jurasico y no es multithreading
+> 
+> #limpio la memoria
+> rm( list=ls() )  #remove all objects
+> gc()             #garbage collection
+          used (Mb) gc trigger (Mb) max used (Mb)
+Ncells  580970 31.1    1329530 71.1   660768 35.3
+Vcells 1557331 11.9    8388608 64.0  1799636 13.8
+> 
+> require("data.table")
+Loading required package: data.table
+data.table 1.14.2 using 4 threads (see ?getDTthreads).  Latest news: r-datatable.com
+> require("randomForest")
+Loading required package: randomForest
+randomForest 4.7-1.1
+Type rfNews() to see new features/changes/bug fixes.
+> require("ranger")
+Loading required package: ranger
+
+Attaching package: ‘ranger’
+
+The following object is masked from ‘package:randomForest’:
+
+    importance
+
+> 
+> 
+> setwd( "~/buckets/b1/" )  #cambiar por la carpeta local
+> 
+> #leo el dataset
+> dataset  <- fread( "./datasets/paquete_premium.csv.gz", stringsAsFactors= TRUE)
+|--------------------------------------------------|
+|==================================================|
+|--------------------------------------------------|
+|==================================================|
+> 
+> #me quedo SOLO con los BAJA+2
+> dataset  <- dataset[  clase_ternaria =="BAJA+2"  & foto_mes>=202001  & foto_mes<=202011, ]
+> gc()
+          used (Mb) gc trigger   (Mb)   max used   (Mb)
+Ncells 1835394 98.1    2817931  150.5    2817931  150.5
+Vcells 4327969 33.1  843457637 6435.1 1050159305 8012.1
+> 
+> #quito los nulos para que se pueda ejecutar randomForest,  Dios que algoritmo prehistorico ...
+> dataset  <- na.roughfix( dataset )
+> 
+> 
+> #los campos que arbitrariamente decido considerar para el clustering
+> #por supuesto, se pueden cambiar
+> campos_buenos  <- c( "ctrx_quarter", "cpayroll_trx", "mcaja_ahorro", "mtarjeta_visa_consumo", "ctarjeta_visa_trx",
++                      "mcuentas_saldo", "mrentabilidad_annual", "mprestamos_personales", "mactivos_margen", "mpayroll",
++                      "Visa_mpagominimo", "Master_fechaalta", "cliente_edad", "chomebanking_trx", "Visa_msaldopesos",
++                      "Visa_Fvencimiento", "mrentabilidad", "Visa_msaldototal", "Master_Fvencimiento", "mcuenta_corriente",
++                      "Visa_mpagospesos", "Visa_fechaalta", "mcomisiones_mantenimiento", "Visa_mfinanciacion_limite",
++                      "mtransferencias_recibidas", "cliente_antiguedad", "Visa_mconsumospesos", "Master_mfinanciacion_limite",
++                      "mcaja_ahorro_dolares", "cproductos", "mcomisiones_otras", "thomebanking", "mcuenta_debitos_automaticos",
++                      "mcomisiones", "Visa_cconsumos", "ccomisiones_otras", "Master_status", "mtransferencias_emitidas",
++                      "mpagomiscuentas")
+> 
+> 
+> 
+> #Ahora, a esperar mucho con este algoritmo del pasado que NO correr en paralelo, patetico
+> modelo  <- randomForest( x= dataset[  , campos_buenos, with=FALSE ], 
++                          y= NULL, 
++                          ntree= 1000, #se puede aumentar a 10000
++                          proximity= TRUE, 
++                          oob.prox=  TRUE )
+> 
+> #genero los clusters jerarquicos
+> hclust.rf  <- hclust( as.dist ( 1.0 - modelo$proximity),  #distancia = 1.0 - proximidad
++                       method= "ward.D2" )
+> 
+> 
+> 
+> #primero, creo la carpeta donde van los resultados
+> dir.create( "./exp/", showWarnings= FALSE )
+> dir.create( "./exp/ST7610", showWarnings= FALSE )
+> setwd( "~/buckets/b1/exp/ST7610" )
+> 
+> 
+> #imprimo un pdf con la forma del cluster jerarquico
+> pdf( "cluster_jerarquico.pdf" )
+> plot( hclust.rf )
+> dev.off()
+null device 
+          1 
+> 
+> 
+> #genero 7 clusters
+> h <- 20
+> distintos <- 0
+> 
+> while(  h>0  &  !( distintos >=6 & distintos <=7 ) )
++ {
++   h <- h - 1 
++   rf.cluster  <- cutree( hclust.rf, h)
++ 
++   dataset[  , cluster2 := NULL ]
++   dataset[  , cluster2 := rf.cluster ]
++ 
++   distintos  <- nrow( dataset[  , .N,  cluster2 ] )
++   cat( distintos, " " )
++ }
+19  18  17  16  15  14  13  12  11  10  9  8  7  Warning message:
+In `[.data.table`(dataset, , `:=`(cluster2, NULL)) :
+  Column 'cluster2' does not exist to remove
+> 
+> #en  dataset,  la columna  cluster2  tiene el numero de cluster
+> #sacar estadicas por cluster
+> 
+> dataset[  , .N,  cluster2 ]  #tamaño de los clusters
+   cluster2    N
+1:        1  557
+2:        2 1799
+3:        3 1192
+4:        4  549
+5:        5  550
+6:        6  252
+7:        7  497
+> 
+> #grabo el dataset en el bucket, luego debe bajarse a la PC y analizarse
+> fwrite( dataset,
++         file= "cluster_de_bajas.txt",
++         sep= "\t" )
+> 
+> 
+> #ahora a mano veo los centroides de los 7 clusters
+> #esto hay que hacerlo para cada variable,
+> #  y ver cuales son las que mas diferencian a los clusters
+> #esta parte conviene hacerla desde la PC local, sobre  cluster_de_bajas.txt
+> 
+> dataset[  , mean(ctrx_quarter),  cluster2 ]  #media de la variable  ctrx_quarter
+   cluster2        V1
+1:        1 87.540395
+2:        2 31.327404
+3:        3 39.888423
+4:        4  6.178506
+5:        5  3.014545
+6:        6  6.079365
+7:        7  6.513078
+> dataset[  , mean(mtarjeta_visa_consumo),  cluster2 ]
+   cluster2           V1
+1:        1 2.674276e+04
+2:        2 2.313806e+02
+3:        3 6.754055e+03
+4:        4 0.000000e+00
+5:        5 0.000000e+00
+6:        6 0.000000e+00
+7:        7 6.985714e-01
+> dataset[  , mean(mcuentas_saldo),  cluster2 ]
+   cluster2         V1
+1:        1  88501.035
+2:        2   2575.676
+3:        3  26134.070
+4:        4 -95426.848
+5:        5  -1785.330
+6:        6   8952.520
+7:        7   1080.992
+> dataset[  , mean(chomebanking_trx),  cluster2 ]
+   cluster2         V1
+1:        1 56.0807899
+2:        2 15.7059477
+3:        3 25.7449664
+4:        4  1.6174863
+5:        5  0.7472727
+6:        6  3.3650794
+7:        7  1.8591549
