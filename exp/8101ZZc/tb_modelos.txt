@@ -1,0 +1,2 @@
+archivo	iteracion_bayesiana	ganancia
+FM_lightgbm_076.model	76	15456000

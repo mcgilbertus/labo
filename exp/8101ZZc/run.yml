@@ -1,0 +1,20 @@
+run_uuid: 91a2bb9919464ea681521c073e447662
+experiment_id: '1'
+user_id: mcgilberth_pna
+status: RUNNING
+start_time: 1.6567657e+09
+artifact_uri: mlflow-artifacts:/1/91a2bb9919464ea681521c073e447662/artifacts
+lifecycle_stage: active
+run_id: 91a2bb9919464ea681521c073e447662
+end_time: .na
+metrics: .na
+params: .na
+tags:
+- key:
+  - mlflow.user
+  - mlflow.source.name
+  - mlflow.source.type
+  value:
+  - mcgilberth_pna
+  - /home/mcgilberth_pna/labo/src/lib/exp_run_init.r
+  - LOCAL
