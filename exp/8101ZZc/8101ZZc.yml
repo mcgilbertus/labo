@@ -19,7 +19,7 @@ experiment:
 param:
   semilla_primos:  300017 #poner aqui una semilla propia, sirve para crear los numeros primos que seran semillas
 
-  semillerio: 100     #nuevo parámetro, cantidad de semillas que se le cambia al lightgbm y se ensamblan, DEBERIA ser 50
+  semillerio:  20     #nuevo parámetro, cantidad de semillas que se le cambia al lightgbm y se ensamblan, DEBERIA ser 50
                       #cuanto mas grande, mejor ganancia; pero demora mucho mas en correr
 
   modelos_qty:  1
