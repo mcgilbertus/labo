@@ -11,8 +11,8 @@ experiment:
   restart: TRUE
   name: "exp"
   type: "HyperparameterTuning"
-  tags: [ "austero" ]
-  requires:   [ "8120TSa" ]
+  tags: [ "austero c/can" ]
+  requires:   [ "8120TSb" ]
 
 
 param:
