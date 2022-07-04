@@ -1,0 +1,74 @@
+# lag1, delta1, tendencia6, promedio6
+
+googlecloud:
+  RAM:   128
+  vCPU:    8
+  disk:  256
+
+
+experiment:
+  script: "src/completo/z912_FE_UTN.r"
+  restart: FALSE
+  name: "exp"
+  type: "FeatureEngineering"
+  tags: [ "austero" ]
+  description: "Lags1,delta1, tendencia, media"
+
+  requires: [ "DT0001" ]
+
+
+param:
+  dummiesNA: FALSE  #si la variable tiene nulos, agrega una variable dummy que indica +[0,1] si es nulo o no
+
+  corregir: "AsignarNA"     #  Repara las variables rotas { "NO", "ClaudioCastillo", "AsignarNA" }
+  variablesdrift: [ ] #Variables a aeliminar
+  
+  variablesmanuales: FALSE   #NO SE AGREGAN VARIABLES MANUALES
+
+  acumulavars: FALSE   #a lo nuevo lo va aplicando
+
+
+  #lags y sus deltas
+  lags: 
+    correr:    [  TRUE,  FALSE, FALSE, FALSE, FALSE, FALSE ]  #si se corre el lag
+    lag:       [     1,      2,     3,     4,     5,     6 ]  #orden del lag
+    delta:     [  TRUE,  FALSE, FALSE, FALSE, FALSE, FALSE ]  #solo se activa si correr=TRUE 
+    canaritos: [   0.0,    0.0,   0.0,   0.0,   0.0,   0.0 ]  #porcentaje de canaritos asesinos, del total de columnas del dataset, 0 indica NO reducir campos por canaritos
+
+
+  tendenciaYmuchomas:  #todos FALSE
+    correr:    [  TRUE, FALSE, FALSE, FALSE ]   #tendencias a correr, es lo que controla y se impone al resto
+    ventana:   [     6,     3,    9,     12 ]   #tamaño de la ventana, solo se corren las que dicen  correr=TRUE
+    tendencia: [  TRUE,  TRUE,  TRUE,  TRUE ]   #pendiente de la recta ajustada por cuadrados minimos
+    minimo:    [ FALSE,  TRUE, FALSE, FALSE ]   #minimo de la ventana
+    maximo:    [ FALSE, FALSE, FALSE, FALSE ]   #maximo de la ventana
+    promedio:  [  TRUE, FALSE,  TRUE, FALSE ]   #promedio de la ventana
+    ratioavg:  [ FALSE, FALSE, FALSE, FALSE ]   #valor sobre el promedio de la ventana
+    ratiomax:  [ FALSE, FALSE, FALSE, FALSE ]   #valor sobre el maximo de la ventana
+    canaritos: [   0.0,   0.0,   0.0,   0.0 ]   #porcentaje de canaritos asesinos, del total de columnas del dataset, 0 indica NO reducir campos por canaritos
+
+
+  tony:  FALSE
+
+  rankeador: FALSE
+
+  canaritos_final: 0.0   #si es CERO entonces no hace el filtrado final por canaritos
+
+  files:
+    input:
+      dentrada: [ "dataset" ]
+    output:
+      dsalida: "paquete_premium_ext.csv.gz"
+
+  const:
+    clase:         "clase_ternaria"
+    futuro:        [ 202101 ]
+    campos_sort:   [ "numero_de_cliente", "foto_mes" ]   #por donde hago el sort inicial
+    campos_rsort:  [ "foto_mes", "numero_de_cliente" ]   #por donde hago el sort inicial
+    campos_fijos:  [ "numero_de_cliente", "foto_mes", "mes", "clase_ternaria" ]
+
+
+environment:
+  repo_dir: "~/labo/"
+  exp_dir:  "~/buckets/b1/exp/"
+  catalog:  "catalogo.txt"

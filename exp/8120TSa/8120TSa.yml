@@ -1,0 +1,85 @@
+googlecloud:
+  RAM:   256
+  vCPU:    8
+  disk:  300
+
+
+experiment:
+  script: "src/completo/z921_TS_generico.r"
+  restart: FALSE
+  name: "exp"
+  type: "TrainingStrategy"
+  tags: [ "austero" ]
+  requires: [ "8120FEa" ]
+
+
+param:
+  semilla: 102191
+
+  #donde aplico el modelo final, los datos sin clase
+  future:
+    periodos: [ 202101 ]
+    rango:
+      desde:
+      hasta:
+    excluir: [ ]
+    undersampling: []
+
+  #donde entreno
+  train:
+    periodos: [ ]
+    rango:
+      desde:  202001
+      hasta:  202009
+    excluir: [ 202006 ]
+    undersampling: [ ]  #ATENCION  sin undersampling
+
+  #donde valido
+  validate:
+    periodos: [ 202011 ]
+    rango:
+      desde:  
+      hasta:  
+    excluir: [ ]
+    undersampling: [  ]
+
+  #donde testeo
+  test:
+    periodos: [ 202011 ]
+    rango:
+      desde:  
+      hasta:  
+    excluir: [  ]
+    undersampling: [  ]
+
+  #donde entreno el modelo final
+  train_final:
+    periodos: [ ]
+    rango:
+      desde:  202001
+      hasta:  202011
+    excluir: [ 202006 ]
+    undersampling: [  ]
+    
+
+  files:
+    input:
+      dentrada: [ "dataset" ]
+    output:
+      future_data:   "TS_future_data.csv.gz"
+      train_strategy: "TS_train_strategy.csv.gz"
+      train_final:   "TS_train_final.csv.gz"
+      control:       "control.txt"
+
+  const:
+    secciones: [ "future", "train", "validate", "test", "train_final"  ]
+    clase: "clase_ternaria"
+    periodo: "foto_mes"
+    futuro: [ 202101 ]
+    campos_sort:  [ "numero_de_cliente", "foto_mes" ]   #por donde hago el sort inicial
+
+
+environment:
+  repo_dir: "~/labo/"
+  exp_dir:  "~/buckets/b1/exp/"
+  catalog:  "catalogo.txt"
