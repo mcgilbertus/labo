@@ -15,6 +15,9 @@ require("rlist")
 require("yaml")
 
 require("lightgbm")
+require("ranger")
+require("randomForest")  #solo se usa para imputar nulos
+
 
 source( "~/labo/src/lib/exp_lib.r" )
 
@@ -603,7 +606,7 @@ CanaritosImportancia  <- function( canaritos_ratio=0.2 )
 
   GVEZ  <<- GVEZ + 1
 
-  umbral  <- tb_importancia[ Feature %like% "canarito", median(pos) + sd(pos) ]  #Atencion corto en la mediana !!
+  umbral  <- tb_importancia[ Feature %like% "canarito", median(pos) + 2*sd(pos) ]  #Atencion corto en la mediana mas DOS desvios!!
 
   col_utiles  <- tb_importancia[ pos < umbral & !( Feature %like% "canarito"),  Feature ]
   col_utiles  <-  unique( c( col_utiles,  c("numero_de_cliente","foto_mes","clase_ternaria","mes") ) )
@@ -627,6 +630,62 @@ Rankeador  <- function( cols )
                 by= foto_mes ]
   }
 
+  ReportarCampos( dataset )
+}
+#------------------------------------------------------------------------------
+#agrega al dataset nuevas variables {0,1} que provienen de las hojas de un Random Forest
+
+AgregaVarRandomForest  <- function( num.trees, max.depth, min.node.size, mtry)
+{
+  gc()
+  ReportarCampos( dataset )
+  dataset[ , clase01:= ifelse( clase_ternaria=="CONTINUA", 0, 1 ) ]
+
+  campos_buenos  <- setdiff( colnames(dataset), c("clase_ternaria" ) )
+
+  dataset_rf  <- copy( dataset[ , campos_buenos, with=FALSE] )
+  azar  <- runif( nrow(dataset_rf) )
+  dataset_rf[ , entrenamiento := as.integer( foto_mes>= 202001 &  foto_mes<= 202010 &  foto_mes!=202006 & ( clase01==1 | azar < 0.10 )) ]
+
+  #imputo los nulos, ya que ranger no acepta nulos
+  #Leo Breiman, ¿por que le temias a los nulos?
+  dataset_rf  <- na.roughfix( dataset_rf )
+
+  campos_buenos  <- setdiff( colnames(dataset_rf), c("clase_ternaria","entrenamiento" ) )
+  modelo  <- ranger( formula= "clase01 ~ .",
+                     data=  dataset_rf[ entrenamiento==1L, campos_buenos, with=FALSE  ] ,
+                     classification= TRUE,
+                     probability=   FALSE,
+                     num.trees=     num.trees,
+                     max.depth=     max.depth,
+                     min.node.size= min.node.size,
+                     mtry=          mtry
+                   )
+
+  rfhojas  <- predict( object= modelo, 
+                       data= dataset_rf[ , campos_buenos, with=FALSE ],
+                       predict.all= TRUE,    #entrega la prediccion de cada arbol
+                       type= "terminalNodes" #entrega el numero de NODO el arbol
+                     )
+
+  for( arbol in 1:num.trees )
+  {
+    hojas_arbol  <- unique(  rfhojas$predictions[  , arbol  ] )
+
+    for( pos in 1:length(hojas_arbol) )
+    {
+      nodo_id  <- hojas_arbol[ pos ]  #el numero de nodo de la hoja, estan salteados
+      dataset[  ,  paste0( "rf_", sprintf( "%03d", arbol ), "_", sprintf( "%03d", nodo_id ) ) := 0L ]
+
+      dataset[ which( rfhojas$predictions[ , arbol] == nodo_id ,  ), 
+               paste0( "rf_", sprintf( "%03d", arbol ), "_", sprintf( "%03d", nodo_id ) ) := 1L ]
+    }
+  }
+
+  rm( dataset_rf )
+  dataset[ , clase01 := NULL ]
+
+  gc()
   ReportarCampos( dataset )
 }
 #------------------------------------------------------------------------------
@@ -714,6 +773,13 @@ if( PARAM$rankeador ) #agrego los rankings
   Rankeador( cols_lagueables )
   setorderv( dataset, PARAM$const$campos_sort )
 }
+
+
+if( PARAM$randomforest$correr )   AgregaVarRandomForest( PARAM$randomforest$num.trees,
+                                                         PARAM$randomforest$max.depth,
+                                                         PARAM$randomforest$min.node.size,
+                                                         PARAM$randomforest$mtry
+                                                        )
 
 if( PARAM$canaritos_final > 0  )   CanaritosImportancia( canaritos_ratio= PARAM$canaritos_final )
 
