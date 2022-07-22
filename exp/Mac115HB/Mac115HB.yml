@@ -1,0 +1,46 @@
+#Aqui se combinan AL MENOS dos semillerios, dos  ZZ
+
+googlecloud:
+  RAM:   128
+  vCPU:    8
+  disk:  256
+
+
+experiment:
+  script: "src/completo/z971_HB_hibridacion.r"
+  restart: TRUE
+  name: "exp"
+  type: "hybridisation"
+  tags: [ "hybrid" ]
+  description: "Hibridacion de Semillerios"
+  requires:   [ "Mac024ZZ", "Mac024ZZ2", "Mac104ZZ" ]  
+
+param:
+  KA_start:  9000
+  KA_end:   14000
+  KA_step:    500
+
+
+  files:
+    input:  #en formato [ alias_experimento,  archivo ]
+      dtrain_final:  "train_final"
+      dfuture:       "future_data"
+      BOlog:     "BOlog"
+    output:
+      tb_modelos: "tb_modelos.txt"
+      tb_predicciones: "tb_predicciones.txt"
+      prefijo_pred_semillerio: "futuro_prediccion_semillerio_"
+      tb_submits:  "tb_submits.txt"
+
+  const:
+    campo_semillerio: "pred_acumulada"
+    campo_periodo: "foto_mes"
+    campo_id:  "numero_de_cliente"
+    campo_pred: "Predicted"
+
+
+environment:
+  repo_dir: "~/labo/"
+  exp_dir:  "~/buckets/b1/exp/"
+  catalog:  "catalogo.txt"
+
