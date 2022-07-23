@@ -1,0 +1,59 @@
+#ZZ,  los tres pasos FM, SC y KA  juntos
+
+googlecloud:
+  RAM:   128
+  vCPU:    8
+  disk:  256
+
+
+experiment:
+  script: "src/completo/z993_ZZ_lightgbm_semillerio.r"
+  restart: TRUE
+  name: "exp"
+  type: "ZZ"
+  tags: [ "termonuclear" ]
+  description: "del  AsignarNA"
+
+  requires:   [ "termonuclear-HTa" ]
+
+param:
+  semilla_primos:  102191 #poner aqui una semilla propia, sirve para crear los numeros primos que seran semillas
+
+  semillerio:  50     #Uso 50 semillas, se puede aumentar para mejorar
+
+  modelos_qty:  1
+  clase_train_POS:    [ "BAJA+2", "BAJA+1" ]
+  clase_test_POS:     [ "BAJA+2" ]
+
+  KA_start:  8000
+  KA_end:   13000
+  KA_step:    500
+
+
+  files:
+    input:  #en formato [ alias_experimento,  archivo ]
+      dtrain_final:  "train_final"
+      dfuture:       "future_data"
+      BOlog:         "BOlog"
+    output:
+      tb_modelos:      "tb_modelos.txt"
+      FMmodelo:        "FM_lightgbm_"
+      FMimportancia:   "FM_importance_"
+      tb_predicciones: "tb_predicciones.txt"
+      prefijo_pred:    "futuro_prediccion_"
+      tb_submits:      "tb_submits.txt"
+
+  const:
+    campo_clase:    "clase_ternaria"
+    campo_periodo:  "foto_mes"
+    campo_id:       "numero_de_cliente"
+    campo_ganancia: "ganancia"
+    campos_pk:      [ "numero_de_cliente", "foto_mes" ]
+    campo_pred:     "Predicted"
+
+
+environment:
+  repo_dir: "~/labo/"
+  exp_dir:  "~/buckets/b1/exp/"
+  catalog:  "catalogo.txt"
+
