@@ -1,4 +1,5 @@
 #ZZ,  los tres pasos FM, SC y KA  juntos
+# por favor, correr en una virtual machine normal, inmortal  ( que NO sea  spot )
 
 googlecloud:
   RAM:   128
@@ -12,14 +13,14 @@ experiment:
   name: "exp"
   type: "ZZ"
   tags: [ "Mac16" ]
-  description: "termonuclear con mi semilla"
+  description: "termonuclear!"
 
   requires:   [ "Mac163HT" ]
 
 param:
-  semilla_primos:  300149 #poner aqui una semilla propia, sirve para crear los numeros primos que seran semillas
+  semilla_primos:  300239 #poner aqui una semilla propia, sirve para crear los numeros primos que seran semillas
 
-  semillerio:  50     #Uso 50 semillas, se puede aumentar para mejorar
+  semillerio:  80     #Uso 50 semillas, se puede aumentar para mejorar
 
   modelos_qty:  1
   clase_train_POS:    [ "BAJA+2", "BAJA+1" ]

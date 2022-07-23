@@ -10,7 +10,8 @@ experiment:
   name: "exp"
   type: "FeatureEngineering"
   tags: [ "Mac16" ]
-  description: "Termonuclear del profe"
+  description: "termonuclear!"
+
   requires: [ "DT0001" ]
 
 

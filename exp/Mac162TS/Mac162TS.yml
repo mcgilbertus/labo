@@ -1,4 +1,3 @@
-# termonuclear del profe
 googlecloud:
   RAM:   128
   vCPU:    8
@@ -11,12 +10,12 @@ experiment:
   name: "exp"
   type: "TrainingStrategy"
   tags: [ "Mac16" ]
-  description: "Termonuclear con mi semilla"
+  description: "termonuclear!"
   requires: [ "Mac161FE" ]
 
 
 param:
-  semilla: 300149
+  semilla: 300239
 
   #donde aplico el modelo final, los datos sin clase
   future:
