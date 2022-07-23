@@ -1,4 +1,5 @@
 #ZZ,  los tres pasos FM, SC y KA  juntos
+# por favor, correr en una virtual machine normal, inmortal  ( que NO sea  spot )
 
 googlecloud:
   RAM:   128
