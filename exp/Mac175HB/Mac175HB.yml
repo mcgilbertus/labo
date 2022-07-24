@@ -13,7 +13,7 @@ experiment:
   type: "hybridisation"
   tags: [ "Mac17" ]
   description: "Mac17-hibridacion"
-  requires:   [ "Mac134ZZ", "Mac144ZZ", "Mac154ZZ", "Mac164ZZ" ]  
+  requires:   [ "Mac144ZZ", "Mac154ZZ", "Mac164ZZ" ]  
 
 param:
   KA_start:  8000
