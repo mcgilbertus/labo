@@ -24,7 +24,7 @@ source( "~/labo/src/lib/exp_lib.r" )
 #------------------------------------------------------------------------------
 #Aqui empieza el programa
 
-exp_iniciar( )
+exp_iniciar()
 
 #genero un vector de una cantidad de PARAM$semillerio  de semillas,  buscando numeros primos al azar
 primos  <- generate_primes(min=100000, max=1000000)  #genero TODOS los numeros primos entre 100k y 1M
@@ -88,18 +88,11 @@ for( i in  1:PARAM$modelos_qty )
   
   #creo CADA VEZ el dataset de lightgbm
   dtrain  <- lgb.Dataset( data=    data.matrix( dataset[ , campos_buenos, with=FALSE] ),
-                          label=   dataset[ , clase01],
-                          weight=  dataset[ , ifelse( get( PARAM$const$campo_clase ) %in% PARAM$clase_test_POS, 1.0000001, 1.0)],
-                          free_raw_data= FALSE
+                          label=   dataset[ , clase01]
                         )
 
   iteracion_bayesiana  <- parametros$iteracion_bayesiana
   ganancia  <- parametros$ganancia
-
-  #trafo  ratio_num_leaves
-  hojas_maximo  <- nrow( dtrain ) / parametros$min_data_in_leaf
-  parametros$num_leaves  <-   as.integer( parametros$ratio_num_leaves * hojas_maximo )
-  parametros$ratio_num_leaves  <- NULL
 
   #elimino los parametros que no son de lightgbm
   parametros$fecha       <- NULL
@@ -110,6 +103,8 @@ for( i in  1:PARAM$modelos_qty )
   parametros$experimento  <- NULL
   parametros$rows         <- NULL
   parametros$cols         <- NULL
+
+  cat( "parametros$num_leaves " , parametros$num_leaves, "\n" )
 
   #genero el modelo entrenando en los datos finales
   set.seed( parametros$seed )
